@@ -5,6 +5,7 @@ ___
 - Source Layer - слой источников данных
 - Storage Layer - слой хранения данных 
 - Business Layer - слой для доступа к данным бизнес пользователей
+
 Необходимо использовать draw.io, Microsoft Visio Studio, Power Point или инструмент на выбор.
 ___
 ![Архитектура аналитического решения](https://github.com/ShustGF/data_learn/blob/main/DE-101/Module1/Архитектура%20аналитического%20решения.png)
