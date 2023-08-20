@@ -1,2 +1,1 @@
-# data_learn
-step 1
+Моё обучение на сайте https://datalearn.ru/ на курсе "Инженер данных"
