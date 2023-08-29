@@ -64,4 +64,4 @@ ___
 10. Для пункта "2д" создаем отдельную сводную таблицу по таблице "Orders" и выводим на экран таблицу основных показателей годов с разбивкой по месяцам. И для того, чтобы выделить какие-либо отклонения, для каждой таблицы выбираем `"Условное форматирование"` -> `"Цветовые шкалы"`. Это позволит более быстро ориентироваться в таблице.
 # Итог задания 2
 
-![DASHBORD](https://github.com/ShustGF/data_learn/blob/main/DE-101/Module1/Архитектура%20аналитического%20решения.png](https://raw.githubusercontent.com/ShustGF/data_learn/main/DE-101/Module1/DASHBOARD.PNG)https://raw.githubusercontent.com/ShustGF/data_learn/main/DE-101/Module1/DASHBOARD.PNG)
+![DASHBORD](https://github.com/ShustGF/data_learn/blob/main/DE-101/Module1/DASHBOARD.PNG)
