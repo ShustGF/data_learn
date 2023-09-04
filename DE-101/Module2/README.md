@@ -48,7 +48,8 @@ ___
 
 2) Как говорилось в задании 1 создан файл **Commands.sql** который содержит: 
 
-`	
+`
+	
 	CREATE TABLE orders(
 	   Row_ID        INTEGER  NOT NULL PRIMARY KEY 
 	  ,Order_ID      VARCHAR(14) NOT NULL
