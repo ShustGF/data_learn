@@ -44,4 +44,6 @@ ___
 
 Параметры подключения базы данных представлена на следующем изображении:
 
+![Подключение к БД](https://github.com/ShustGF/data_learn/blob/main/DE-101/Module2/Images/link_BD.PNG)
+
 2) 
