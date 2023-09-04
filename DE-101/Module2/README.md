@@ -8,7 +8,7 @@ ___
 
 Контейнер **PosgreSQL** поднимался с помощью следующего содержания **Dockerfile**:
 
-`       FROM postgres:14                                                # За основу взяли репозиторий PostreSQL версии 14 
+        FROM postgres:14                                                # За основу взяли репозиторий PostreSQL версии 14 
 
         RUN apt-get update && apt-get install -y nano vim               # Устанавливаем дополнительные редакторы nano и vim
 
@@ -26,7 +26,7 @@ ___
                                                                           конструкция ENTRYPOIN, запросы из пункта 2.2 находящиеся в файле 
                                                                           "Commands.sql" нужно поместить в каталог /docker-entrypoint-initdb.d. В 
                                                                           данном случае файл "Commands.sql" выполнится при "поднятии" контейнера.
-`
+
 
 После скачивания **Images**, запускаем контейнер с помощью команды `docker run --rm -d -p 2345:5432 --name ps1 shustgf/dlpostgresql`. (порт на хосте равен 2345 из-за того, что установлена локальная версия PostgreSQL и чтобы небыло конфликта обращаться требуется на другой порт) 
 
@@ -48,8 +48,8 @@ ___
 
 2) Как говорилось в задании 1 создан файл **Commands.sql** который содержит: 
 
-`
-	
+
+
 	CREATE TABLE orders(
 	   Row_ID        INTEGER  NOT NULL PRIMARY KEY 
 	  ,Order_ID      VARCHAR(14) NOT NULL
@@ -90,7 +90,7 @@ ___
 	);
 
 	COPY returns(Returned, Order_ID) FROM '/table/Returns.csv' DELIMITER ';' CSV HEADER ENCODING 'windows-1251';
-`
+
 
 Команды:
 
