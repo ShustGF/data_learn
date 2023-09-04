@@ -46,10 +46,8 @@ ___
 
 ![Подключение к БД](https://github.com/ShustGF/data_learn/blob/main/DE-101/Module2/Images/link_BD.PNG)
 
-<<<<<<< Updated upstream
-2) 
-=======
 2) Как говорилось в задании 1 создан файл **Commands.sql** который содержит: 
+
 `	CREATE TABLE orders(
 	   Row_ID        INTEGER  NOT NULL PRIMARY KEY 
 	  ,Order_ID      VARCHAR(14) NOT NULL
@@ -91,8 +89,12 @@ ___
 
 	COPY returns(Returned, Order_ID) FROM '/table/Returns.csv' DELIMITER ';' CSV HEADER ENCODING 'windows-1251';
 `
+
 Команды:
+
 `CREATE TABLE` - позволяет создать таблицу
+
 `SET datestyle = 'ISO,DMY'` - позволяет согласовать дату в формате **день-месяц-год**
+
 `COPY ... FROM ... DELIMITER ';' CSV HEADER ENCODING 'windows-1251'` - позволяет скопировать данные из **CSV** файла в таблицу
  
