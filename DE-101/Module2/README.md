@@ -4,7 +4,7 @@
 
 ___
 
-В рамках выполнения 2  задания была выполнена установка **PostgreSQL** из коробки на локальный компьютер. В основе кроме кнопок "Далее" там делать ничего не требовалось, поэтому в целях усложнения данной задачи и оттачивании навыков полученых на курсе **"Docker"** (https://karpov.courses/docker)  было принято решение поднять контейнер Docker PostgreSQL. **Images** был создан и сохранён в репозитории и доступен по команде `docker pull shustgf/dlpostgresql` (https://hub.docker.com/repository/docker/shustgf/dlpostgresql/general). Данный контейнер имеет уже в себе все необходимы данные для выполения пункта 2.3.
+В рамках выполнения 2  задания была выполнена установка **PostgreSQL** из коробки на локальный компьютер. В основе кроме кнопок "Далее" там делать ничего не требовалось, поэтому в целях усложнения данной задачи и оттачивании навыков полученых на курсе **"Docker"** (https://karpov.courses/docker)  было принято решение поднять контейнер Docker PostgreSQL. **Images** был создан и сохранён в репозитории и доступен по команде `docker pull shustgf/dlpostgresql`(https://hub.docker.com/repository/docker/shustgf/dlpostgresql/general). Данный контейнер имеет уже в себе все необходимы данные для выполения пункта 2.3.
 
 Контейнер **PosgreSQL** поднимался с помощью следующего содержания **Dockerfile**:
 
@@ -100,3 +100,67 @@ ___
 
 `COPY ... FROM ... DELIMITER ';' CSV HEADER ENCODING 'windows-1251'` - позволяет скопировать данные из **CSV** файла в таблицу
  
+3) Расчёт метрик из **Модуля 1**:
+
+	А) Overview (обзор ключевых метрик)
+
+* Total Sales, Total Profit, Profit Ratio, Profit per Order, Sales per Customer, Avg. Discount
+
+		SELECT ROUND(SUM(sales), 2) AS total_sales,
+		ROUND(SUM(profit), 2) AS total_profit,
+		ROUND(SUM(profit) / SUM(sales) * 100, 2) AS profit_ratio,
+		ROUND(SUM(profit) / COUNT(DISTINCT order_id), 2) AS profit_per_order,
+		ROUND(SUM(sales) / COUNT(DISTINCT customer_id), 2) AS sales_per_customer,
+		ROUND(AVG(discount), 2) AS avg_discount
+		FROM orders;
+
+* Monthly Sales by Segment 
+
+		SELECT CAST(DATE_TRUNC('month', order_date) as DATE) as date, 
+	           segment, 
+	           ROUND(SUM(sales)) as  monthly_sales_by_segment
+		FROM orders
+		GROUP BY segment, date
+		ORDER BY date, segment 
+
+* Monthly Sales by Product Category (табличка и график)
+
+		SELECT CAST(DATE_TRUNC('month', order_date) as DATE) as date, 
+			   category , 
+		       ROUND(SUM(sales)) as  monthly_sales_by_category
+		FROM orders
+		GROUP BY category, date
+		ORDER BY date, category 
+
+	Б)Product Dashboard (Продуктовые метрики)
+
+* Sales by Product Category over time (Продажи по категориям)
+
+		SELECT category,
+			order_date,  
+			SUM(sales) AS  sales_by_product_category_over_time
+		FROM orders
+		GROUP BY category,order_date  
+		ORDER BY category,order_date 
+
+	В)Customer Analysis
+
+* Sales and Profit by Customer, Customer Ranking
+
+		with t1 as (SELECT customer_id , ROUND(sum(sales)) AS sum_sales , ROUND(SUM(profit)) as sum_profit 
+		FROM orders
+		GROUP BY customer_id)
+		SELECT customer_id, 
+			sum_sales, sum_profit,DENSE_RANK() OVER(ORDER BY sum_sales DESC) as rank_customer
+		FROM t1
+		ORDER BY rank_customer
+
+* Sales per region
+
+		SELECT region  , SUM(sales) AS sum_sales
+		FROM orders
+		group by region 
+		order by sum_sales DESC
+
+
+
