@@ -1,0 +1,70 @@
+WITH man_reg as (
+select r.region_id, r.region_name, m.manager_name  
+FROM managers_regions mr INNER JOIN managers m  ON  mr.manager_id =m.manager_id 
+						 INNER JOIN regions r ON r.region_id = mr.region_id 
+) 
+,Postal_code as (
+select postal_code, 
+	   c.country_name, 
+	   s.state_name,
+	   c2.city_name,
+	   mr.region_name,
+	   mr.manager_name
+FROM postal_codes pc INNER JOIN countries c ON pc.country_id = c.country_id 
+					 INNER JOIN "State" s ON pc.state_id = s.state_id
+					 INNER JOIN city c2 ON pc.city_id = c2.city_id
+					 INNER JOIN man_reg mr ON pc.region_id = mr.region_id 
+),
+C_S as (
+SELECT C_S_id, s2.subcat_name , c3.category_name 
+FROM cat_subcat cs INNER JOIN subcategories s2 ON cs.subcategory_id = s2.subcategory_id 
+				   INNER JOIN categories c3  ON cs.category_id = c3.category_id  
+),
+Prod as (
+SELECT product_id, product_name, cs2.subcat_name, cs2.category_name
+FROM products p INNER JOIN C_S cs2 ON cs2.C_S_id = p.c_s_id 
+),
+seg as (
+SELECT customer_id, customer_name, s.segment_name  
+FROM customers c JOIN segment s ON c.segment_id  = s.segment_id 
+),
+general_orders as
+(SELECT o.order_id, order_date, year, month, day, quarter, week, day_week, ship_date, ship_mode, o.customer_id, customer_name, segment_name,
+	   o.product_id, product_name, category_name, subcat_name, o.postal_code, country_name, state_name, city_name, region_name, manager_name,
+	   sales, quantity, discount, profit, status
+FROM public.orders o JOIN Postal_code pc ON o.postal_code = pc.postal_code
+					 JOIN Prod ON Prod.product_id = o.product_id 
+					 JOIN seg ON o.customer_id = seg.customer_id
+					 JOIN shiping_modes sm ON o.ship_id = sm.ship_id
+					 LEFT JOIN return_orders ro ON ro.order_id= o.order_id
+					 JOIN calendar cal ON cal.date_id = o.order_date
+)
+ SELECT order_id,
+	   order_date,
+	   year as order_year,
+	   month as order_month,
+	   day as order_day,
+	   quarter as order_quarter,
+	   week as order_week,
+	   day_week as order_day_week,
+	   ship_date,
+	   ship_mode,
+	   customer_id,
+	   customer_name,
+	   segment_name,
+	   product_id,
+	   product_name,
+	   category_name,
+	   subcat_name,
+	   postal_code,
+	   country_name,
+	   state_name,
+	   city_name,
+	   region_name,
+	   manager_name,
+	   sales,
+	   quantity,
+	   discount,
+	   profit,
+	   COALESCE(status,'No') as status_order
+FROM general_orders

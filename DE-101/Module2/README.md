@@ -207,3 +207,107 @@ ___
 3) почтовый индекс относится к 2м разным городам например postal_code = 92024
 
 ## 4. База данных в облаке ##
+<<<<<<< Updated upstream
+=======
+
+В рамках выполнения задания я попытался зарегистрировать аккаунт на AWS, но столкнулся с проблемой списания 1$. Банковская карта не проходила верификацию и деньги не списывались. В связи с этим зарегистрировать полноценный аккаунт у меня не полулучилось. Для выполпнения задания я воспользовался сервисом **ElephantSQL**, где есть возможность зарегистрировать аккаунт и воспользоваться бесплатным облачным хранилищем размером до 20 Мб(для учебных целей пойдёт). На **ElephanSQL**  я создал экземпляр 
+
+[!ElephanSQL]()
+
+и чтобы к нему подключиться через **DBeaver** нужно использовтаь Host подключение, а не URL. В противном случае подключиться к облаку не получится.
+
+[!link_cloud]()
+
+После чего я занёс данные используя уже готовый примеры запросов:
+
+- Staging [stg.orders.sql](https://github.com/Data-Learn/data-engineering/blob/master/DE-101%20Modules/Module02/DE%20-%20101%20Lab%202.1/stg.orders.sql)
+- Business Layer [from_stg_to_dw.sql](https://github.com/Data-Learn/data-engineering/blob/master/DE-101%20Modules/Module02/DE%20-%20101%20Lab%202.1/from_stg_to_dw.sql)
+
+В целом работа с базой данных через облочные технологии, не сильно отличается от работы на локальной базе данных, за исключением того, что приходтся здать когда данные попадут на само облако, т.е. есть небольшая задержка в зависимости от того где находится сервер к которому мы подключаемся.
+
+## 5. Как донести данные до бизнес-пользователя (Пример решений на KlipFolio, Google Sheets и пр.) ##
+
+В связи с тем, что **ElephanSQL** поддерживает не более 5 подключений, а в lookerstudio каждая визуализация подрозумевает отдельное подключение (как я понял), при работе с lookerstudio возникает следующая ошибка:
+
+[!errors]()
+
+Имено из-за неё не получается  полноценно выполнить данное задание. В связи с этим было принято решение разверинуть Docker из пункта 3 и написать запрос на объединения данных из таблиц.
+
+			WITH man_reg as (
+			select r.region_id, r.region_name, m.manager_name  
+			FROM managers_regions mr INNER JOIN managers m  ON  mr.manager_id =m.manager_id 
+									INNER JOIN regions r ON r.region_id = mr.region_id 
+			) 
+			,Postal_code as (
+			select postal_code, 
+				c.country_name, 
+				s.state_name,
+				c2.city_name,
+				mr.region_name,
+				mr.manager_name
+			FROM postal_codes pc INNER JOIN countries c ON pc.country_id = c.country_id 
+								INNER JOIN "State" s ON pc.state_id = s.state_id
+								INNER JOIN city c2 ON pc.city_id = c2.city_id
+								INNER JOIN man_reg mr ON pc.region_id = mr.region_id 
+			),
+			C_S as (
+			SELECT C_S_id, s2.subcat_name , c3.category_name 
+			FROM cat_subcat cs INNER JOIN subcategories s2 ON cs.subcategory_id = s2.subcategory_id 
+							INNER JOIN categories c3  ON cs.category_id = c3.category_id  
+			),
+			Prod as (
+			SELECT product_id, product_name, cs2.subcat_name, cs2.category_name
+			FROM products p INNER JOIN C_S cs2 ON cs2.C_S_id = p.c_s_id 
+			),
+			seg as (
+			SELECT customer_id, customer_name, s.segment_name  
+			FROM customers c JOIN segment s ON c.segment_id  = s.segment_id 
+			),
+			general_orders as
+			(SELECT o.order_id, order_date, year, month, day, quarter, week, day_week, ship_date, ship_mode, o.customer_id, customer_name, segment_name,
+				o.product_id, product_name, category_name, subcat_name, o.postal_code, country_name, state_name, city_name, region_name, manager_name,
+				sales, quantity, discount, profit, status
+			FROM public.orders o JOIN Postal_code pc ON o.postal_code = pc.postal_code
+								JOIN Prod ON Prod.product_id = o.product_id 
+								JOIN seg ON o.customer_id = seg.customer_id
+								JOIN shiping_modes sm ON o.ship_id = sm.ship_id
+								LEFT JOIN return_orders ro ON ro.order_id= o.order_id
+								JOIN calendar cal ON cal.date_id = o.order_date
+			)
+			SELECT order_id,
+				order_date,
+				year as order_year,
+				month as order_month,
+				day as order_day,
+				quarter as order_quarter,
+				week as order_week,
+				day_week as order_day_week,
+				ship_date,
+				ship_mode,
+				customer_id,
+				customer_name,
+				segment_name,
+				product_id,
+				product_name,
+				category_name,
+				subcat_name,
+				postal_code,
+				country_name,
+				state_name,
+				city_name,
+				region_name,
+				manager_name,
+				sales,
+				quantity,
+				discount,
+				profit,
+				COALESCE(status,'No') as status_order
+			FROM general_orders
+
+Сравнив начальную таблицу с обобщенной таблицей в них по 9994 строчек, это значит что данные не потеряли. (своего рода сверка данных)
+
+Далее я экспортировал полученные данные из DBeaver в CSV файл и подгрузил его с систему визуализации **Tablue Public**. В целом я имею представление, что используя облачные сервисы, мне облегчило бы задачу получения данных, а на построение самого дашборда не влияет от куда брать данные. Самое главное уметь их преобразовать до постоения. Долго не думая я решил построить такойже дашборд как и в модуле 1.
+
+![дашборд]()
+
+>>>>>>> Stashed changes
